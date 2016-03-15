@@ -1,5 +1,7 @@
 var request = require('request');
 var express = require('express');
+var private = require("./private");
+
 request = request.defaults({jar: true});
 request.get('https://www.seamless.com/corporate/login', function(error, response, body) {
   if(!error && response.statusCode == 200) {
@@ -13,7 +15,7 @@ request.get('https://www.seamless.com/corporate/login', function(error, response
         'Connection': 'keep-alive',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
       },
-      form: {username: 'MManivannan', password: 'a^UfgG0zIj5K'}
+      form: private
     }
     request(options, null);
   }
