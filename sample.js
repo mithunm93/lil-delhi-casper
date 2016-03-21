@@ -18,6 +18,8 @@ casper.on("page.error", function(msg, trace) {
 });
 
 var url = 'https://www.seamless.com/corporate/login';
+var timeoutFunction = function() {};
+var timeout = 100000; //100 seconds
 
 casper.start(url);
 
@@ -28,12 +30,31 @@ casper.waitForSelector('form#widgetLoginForm', function() {
     'username': private.username,
     'password':  private.password
   }, true);
-});
+}, timeoutFunction, timeout);
 
 // 2. Select 5:45 delivery
 casper.waitForSelector('form#pageForm', function() {
   console.log("Step 1: Time selection loaded");
-  this.fill('form#pageForm', {'time': '5:45 PM'}, true);
-});
+  this.fill('form#pageForm', {'time': '8:00 PM'}, true);
+}, timeoutFunction, timeout);
+
+// 3. Select Little Delhi
+casper.waitForSelector('table#resultstable', function() {
+  console.log("Step2: Results table loaded");
+  this.clickLabel('Little Delhi', 'a');
+}, timeoutFunction, timeout);
+
+//4. Order items
+casper.waitForSelector('div#PopularList', function() {
+  console.log("Step3: Little Delhi loaded");
+  this.clickLabel('Butter Chicken (Chef Recommended)', 'a');
+}, timeoutFunction, timeout);
+
+
+casper.waitForSelector('form#orderAttributes', function() {
+  console.log("Step4: Butter Chicken loaded");
+  this.clickLabel('Spicy', 'label');
+  this.clickLabel('Add Item to Your Order', 'a');
+}, timeoutFunction, timeout);
 
 casper.run();
