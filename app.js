@@ -20,8 +20,14 @@ casper.on("page.error", function(msg, trace) {
 var url = 'https://www.seamless.com/corporate/login';
 var timeoutFunction = function() {};
 var timeout = 100000; //100 seconds
+var orders;
 
-casper.start(url);
+// Ask Alfred for today's orders
+casper.start('http://localhost:3000/get_orders').then(function() {
+  debugger;
+  orders = JSON.parse(this.getPageContent());
+  //casper.thenOpen(url);
+});
 
 // 1. Login
 casper.waitForSelector('form#widgetLoginForm', function() {
@@ -35,7 +41,7 @@ casper.waitForSelector('form#widgetLoginForm', function() {
 // 2. Select 5:45 delivery
 casper.waitForSelector('form#pageForm', function() {
   console.log("Step 1: Time selection loaded");
-  this.fill('form#pageForm', {'time': '8:00 PM'}, true);
+  this.fill('form#pageForm', {'time': '5:45 PM'}, true);
 }, timeoutFunction, timeout);
 
 // 3. Select Little Delhi
@@ -44,17 +50,55 @@ casper.waitForSelector('table#resultstable', function() {
   this.clickLabel('Little Delhi', 'a');
 }, timeoutFunction, timeout);
 
-//4. Order items
+//4. Add items
 casper.waitForSelector('div#PopularList', function() {
   console.log("Step3: Little Delhi loaded");
-  this.clickLabel('Butter Chicken (Chef Recommended)', 'a');
+  clickOrders(orders.items, 0);
 }, timeoutFunction, timeout);
 
+//5. Confirm items
+casper.on('items.added', function() {
+  console.log('Proceeding to checkout');
+  casper.clickLabel('Proceed to Checkout', 'a');
+});
 
-casper.waitForSelector('form#orderAttributes', function() {
-  console.log("Step4: Butter Chicken loaded");
-  this.clickLabel('Spicy', 'label');
-  this.clickLabel('Add Item to Your Order', 'a');
-}, timeoutFunction, timeout);
+casper.waitForSelector('div#EcoFriendly', function() {
+  // TODO: what happens on order price too high? -> popup
+  // TODO: need to add people
+  // TODO: check if people names are verifiable
+  // TODO: Ensure min price is hit
+
+  console.log('Going Paperless');
+  this.clickLabel('Do not include plastic utensils, napkins, etc.', 'label');
+
+  this.wait(1000, function() {
+    console.log('Submitting order!');
+    this.clickLabel('Submit Order', 'a');
+  });
+});
 
 casper.run();
+
+function clickOrders(items, i) {
+  var item = Object.keys(items[i])[0];
+  casper.clickLabel(item, 'a');
+
+  casper.waitForSelector('form#orderAttributes', function() {
+    console.log("Step4: " + item + " loaded");
+
+    if (items[i][item].spice !== undefined)
+      this.clickLabel(items[i][item].spice, 'label');
+    this.wait(1000, function() {
+      this.clickLabel('Add Item to Your Order', 'a');
+    });
+
+    // wait for modal to close
+    this.wait(3000, function() {
+      if (++i < items.length)
+        clickOrders(items, i);
+      else
+        this.emit('items.added');
+    });
+
+  }, timeoutFunction, timeout);
+}
