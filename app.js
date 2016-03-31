@@ -19,14 +19,14 @@ casper.on("page.error", function(msg, trace) {
 
 var url = 'https://www.seamless.com/corporate/login';
 var timeoutFunction = function() {};
-var timeout = 100000; //100 seconds
+var timeout = 300000; // 5 minutes for total order time
 var orders;
 
-// Ask Alfred for today's orders
+// 0. Ask Alfred for today's orders
 casper.start('http://localhost:3000/get_orders').then(function() {
-  debugger;
   orders = JSON.parse(this.getPageContent());
-  //casper.thenOpen(url);
+  if (orders.items.length !== 0)
+    casper.thenOpen(url);
 });
 
 // 1. Login
@@ -50,24 +50,28 @@ casper.waitForSelector('table#resultstable', function() {
   this.clickLabel('Little Delhi', 'a');
 }, timeoutFunction, timeout);
 
-//4. Add items
+// 4. Add items
 casper.waitForSelector('div#PopularList', function() {
   console.log("Step3: Little Delhi loaded");
   clickOrders(orders.items, 0);
 }, timeoutFunction, timeout);
 
-//5. Confirm items
+// 5. Confirm items
 casper.on('items.added', function() {
   console.log('Proceeding to checkout');
-  casper.clickLabel('Proceed to Checkout', 'a');
+  this.clickLabel('Proceed to Checkout', 'a');
 });
 
-casper.waitForSelector('div#EcoFriendly', function() {
-  // TODO: what happens on order price too high? -> popup
-  // TODO: need to add people
-  // TODO: check if people names are verifiable
-  // TODO: Ensure min price is hit
+// 6. Add people to order
+casper.waitForSelector('div#submit_order_div', function() {
+  if (orders.users !== [])
+    addPeople(orders.users, 0);
+  else
+    this.emit('people.added');
+}, timeoutFunction, timeout);
 
+// 7. Go paperless and submit order
+casper.on('people.added', function() {
   console.log('Going Paperless');
   this.clickLabel('Do not include plastic utensils, napkins, etc.', 'label');
 
@@ -79,6 +83,26 @@ casper.waitForSelector('div#EcoFriendly', function() {
 
 casper.run();
 
+// Add one person every 5 seconds
+function addPeople(people, i) {
+  var first = people[i][0];
+  var last = people[i][1];
+
+  casper.clickLabel('Add Another User');
+  casper.sendKeys('input#FirstName', first);
+  casper.sendKeys('input#LastName', last);
+  casper.clickLabel('Verify', 'a');
+
+  casper.wait(5000, function() {
+    console.log(first + ' ' + last + ' added!');
+    if (++i < people.length)
+      addPeople(people, i);
+    else
+      casper.emit('people.added');
+  });
+}
+
+// Add an item every 4 seconds
 function clickOrders(items, i) {
   var item = Object.keys(items[i])[0];
   casper.clickLabel(item, 'a');
