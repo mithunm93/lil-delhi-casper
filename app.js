@@ -22,11 +22,16 @@ var timeoutFunction = function() {};
 var timeout = 300000; // 5 minutes for total order time
 var orders;
 
+// TODO: Figure out a way to send headers in .start
+casper.start('http://google.com');
+
 // 0. Ask Alfred for today's orders
-casper.start('http://localhost:3000/get_orders').then(function() {
+casper.thenOpen('http://lil-delhi-alfred.herokuapp.com/get_orders', { headers: { token: private.slackSecret } }).then(function() {
+  debugger;
   orders = JSON.parse(this.getPageContent());
-  if (orders.items.length !== 0)
-    casper.thenOpen(url);
+  if (orders.items.length === 0)
+    return console.log("No orders!");
+  casper.thenOpen(url);
 });
 
 // 1. Login
