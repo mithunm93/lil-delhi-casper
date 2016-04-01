@@ -112,12 +112,13 @@ function clickOrders(items, i) {
 
     if (items[i][item].spice !== undefined)
       this.clickLabel(items[i][item].spice, 'label');
-    this.wait(1000, function() {
+    this.wait(1500, function() {
       this.clickLabel('Add Item to Your Order', 'a');
     });
 
     // wait for modal to close
     this.wait(3000, function() {
+      console.log(item + " added");
       if (++i < items.length)
         clickOrders(items, i);
       else
