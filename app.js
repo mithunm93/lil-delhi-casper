@@ -27,7 +27,6 @@ casper.start('http://google.com');
 
 // 0. Ask Alfred for today's orders
 casper.thenOpen('http://lil-delhi-alfred.herokuapp.com/get_orders', { headers: { token: private.slackSecret } }).then(function() {
-  debugger;
   orders = JSON.parse(this.getPageContent());
   if (orders.items.length === 0)
     return console.log("No orders!");
@@ -79,6 +78,9 @@ casper.waitForSelector('div#submit_order_div', function() {
 casper.on('people.added', function() {
   console.log('Going Paperless');
   this.clickLabel('Do not include plastic utensils, napkins, etc.', 'label');
+
+  console.log('Putting in phone number');
+  this.sendKeys('input#phoneNumber', orders.number, {reset: true});
 
   this.wait(1000, function() {
     console.log('Submitting order!');
