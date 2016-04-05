@@ -45,7 +45,7 @@ casper.waitForSelector('form#widgetLoginForm', function() {
 // 2. Select 5:45 delivery
 casper.waitForSelector('form#pageForm', function() {
   console.log("Step 1: Time selection loaded");
-  this.fill('form#pageForm', {'time': '5:45 PM'}, true);
+  this.fill('form#pageForm', {'time': '5:15 PM'}, true);
 }, timeoutFunction, timeout);
 
 // 3. Select Little Delhi
