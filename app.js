@@ -18,15 +18,17 @@ casper.on("page.error", function(msg, trace) {
 });
 
 var url = 'https://www.seamless.com/corporate/login';
+var alfredGetOrdersUrl = 'http://lil-delhi-alfred.herokuapp.com/get_orders';
+var alfredPostCompletionUrl = 'http://lil-delhi-alfred.herokuapp.com/order_completed';
 var timeoutFunction = function() {};
-var timeout = 300000; // 5 minutes for total order time
+var timeout = 600000; // 10 minutes for total order time
 var orders;
 
 // TODO: Figure out a way to send headers in .start
 casper.start('http://google.com');
 
 // 0. Ask Alfred for today's orders
-casper.thenOpen('http://lil-delhi-alfred.herokuapp.com/get_orders', { headers: { token: private.slackSecret } }).then(function() {
+casper.thenOpen(alfredGetOrdersUrl, { headers: { token: private.slackSecret } }).then(function() {
   orders = JSON.parse(this.getPageContent());
   if (orders.items.length === 0)
     return console.log("No orders!");
@@ -88,6 +90,18 @@ casper.on('people.added', function() {
   });
 });
 
+// 8. Confirm that order was placed
+casper.waitForSelector('div.ThanksForOrder', function() {
+  console.log('Order successfully submitted');
+  this.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: true } }).then(function() {this.exit});
+}, timeoutFunction, timeout);
+
+// 9. If something happened and it didn't succeed, show failure
+casper.wait(timeout, function() {
+  console.log('Order was unsuccessful');
+  this.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: false } }).then(function() {this.exit});
+});
+
 casper.run();
 
 // Add one person every 5 seconds
@@ -119,12 +133,12 @@ function clickOrders(items, i) {
 
     if (items[i][item].spice !== undefined)
       this.clickLabel(items[i][item].spice, 'label');
-    this.wait(1500, function() {
+    this.wait(3000, function() {
       this.clickLabel('Add Item to Your Order', 'a');
     });
 
     // wait for modal to close
-    this.wait(3000, function() {
+    this.wait(5000, function() {
       console.log(item + " added");
       if (++i < items.length)
         clickOrders(items, i);
