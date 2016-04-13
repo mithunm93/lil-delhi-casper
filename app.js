@@ -30,8 +30,10 @@ casper.start('http://google.com');
 // 0. Ask Alfred for today's orders
 casper.thenOpen(alfredGetOrdersUrl, { headers: { token: private.slackSecret } }).then(function() {
   orders = JSON.parse(this.getPageContent());
-  if (orders.items.length === 0)
-    return console.log("No orders!");
+  if (orders.items.length === 0) {
+    console.log("No orders!");
+    this.exit();
+  }
   casper.thenOpen(url);
 });
 
