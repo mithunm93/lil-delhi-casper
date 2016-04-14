@@ -99,10 +99,15 @@ casper.waitForSelector('div.ThanksForOrder', function() {
 }, timeoutFunction, timeout);
 
 // 9. If something happened and it didn't succeed, show failure
-casper.wait(timeout, function() {
-  console.log('Order was unsuccessful');
-  this.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: false } }).then(function() {this.exit});
-});
+//
+// TODO: fix this, it seems to trigger every time, even after the order
+//   is successfully submitted. The .exit is not doing what I think it
+//   should be doing or Casper is appending the exit to the back of this
+//   wait.
+//casper.wait(timeout, function() {
+//  console.log('Order was unsuccessful');
+//  this.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: false } }).then(function() {this.exit});
+//});
 
 casper.run();
 
