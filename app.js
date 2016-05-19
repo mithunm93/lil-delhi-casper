@@ -121,7 +121,7 @@ function addPeople(people, i) {
   casper.sendKeys('input#LastName', last);
   casper.clickLabel('Verify', 'a');
 
-  casper.wait(5000, function() {
+  casper.wait(8000, function() {
     console.log(first + ' ' + last + ' added!');
     if (++i < people.length)
       addPeople(people, i);
