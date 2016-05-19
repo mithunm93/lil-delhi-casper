@@ -21,7 +21,7 @@ var url = 'https://www.seamless.com/corporate/login';
 var alfredGetOrdersUrl = 'http://lil-delhi-alfred.herokuapp.com/get_orders';
 var alfredPostCompletionUrl = 'http://lil-delhi-alfred.herokuapp.com/order_completed';
 var timeoutFunction = function() {};
-var timeout = 600000; // 10 minutes for total order time
+var timeout = 1200000; // 20 minutes for total order time
 var orders;
 
 // TODO: Figure out a way to send headers in .start
