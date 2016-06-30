@@ -47,7 +47,7 @@ casper.waitForSelector('form#widgetLoginForm', function() {
   }, true);
 }, timeoutFunction, timeout);
 
-// 2. Select 5:45 delivery
+// 2. Select 5:15 delivery
 casper.waitForSelector('form#pageForm', function() {
   console.log("Step 1: Time selection loaded");
   this.fill('form#pageForm', {'time': '5:15 PM'}, true);
