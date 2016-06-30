@@ -18,8 +18,10 @@ casper.on("error", function(msg, trace) {
     notifyAlfred(false);
 });
 
+var DEBUG = true;
 var url = 'https://www.seamless.com/corporate/login';
-var alfredGetOrdersUrl = 'http://lil-delhi-alfred.herokuapp.com/get_orders';
+var alfredBaseUrl = DEBUG ? 'localhost:3000' : 'lil-delhi-alfred.herokuapp.com';
+var alfredGetOrdersUrl = 'http://' + alfredBaseUrl + '/get_orders';
 var alfredPostCompletionUrl = 'http://lil-delhi-alfred.herokuapp.com/order_completed';
 var timeoutFunction = function() {notifyAlfred(false);};
 var timeout = 20000; // 20 seconds for each step
