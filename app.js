@@ -13,14 +13,15 @@ casper.on('remote.message', function(msg) {
     this.echo('remote message caught: ' + msg);
 });
 
-casper.on("page.error", function(msg, trace) {
-    this.echo("Page Error: " + msg, "ERROR");
+casper.on("error", function(msg, trace) {
+    this.echo("Error: " + msg, "ERROR");
+    notifyAlfred(false);
 });
 
 var url = 'https://www.seamless.com/corporate/login';
 var alfredGetOrdersUrl = 'http://lil-delhi-alfred.herokuapp.com/get_orders';
 var alfredPostCompletionUrl = 'http://lil-delhi-alfred.herokuapp.com/order_completed';
-var timeoutFunction = function() {};
+var timeoutFunction = function() {notifyAlfred(false);};
 var timeout = 1200000; // 20 minutes for total order time
 var orders;
 
@@ -94,22 +95,15 @@ casper.on('people.added', function() {
 
 // 8. Confirm that order was placed
 casper.waitForSelector('div.ThanksForOrder', function() {
-  console.log('Order successfully submitted');
-  this.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: true } }).then(function() {this.exit});
+  notifyAlfred(true);
 }, timeoutFunction, timeout);
 
-// 9. If something happened and it didn't succeed, show failure
-//
-// TODO: fix this, it seems to trigger every time, even after the order
-//   is successfully submitted. The .exit is not doing what I think it
-//   should be doing or Casper is appending the exit to the back of this
-//   wait.
-//casper.wait(timeout, function() {
-//  console.log('Order was unsuccessful');
-//  this.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: false } }).then(function() {this.exit});
-//});
-
 casper.run();
+
+function notifyAlfred(success) {
+  success ? console.log('Order successfully submitted') : console.log('Order was unsuccessful');
+  casper.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: success } }).then(function() {console.log("exiting!"); this.exit()});
+}
 
 // Add one person every 5 seconds
 function addPeople(people, i) {
