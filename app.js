@@ -18,7 +18,7 @@ casper.on("error", function(msg, trace) {
     notifyAlfred(false);
 });
 
-var DEBUG = true;
+var DEBUG = false;
 var url = 'https://www.seamless.com/corporate/login';
 var alfredBaseUrl = DEBUG ? 'localhost:3000' : 'lil-delhi-alfred.herokuapp.com';
 var alfredGetOrdersUrl = 'http://' + alfredBaseUrl + '/get_orders';
