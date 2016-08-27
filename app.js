@@ -104,8 +104,10 @@ casper.waitForSelector('div.ThanksForOrder', function() {
 casper.run();
 
 function notifyAlfred(success) {
-  success ? console.log('Order successfully submitted') : console.log('Order was unsuccessful');
-  casper.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: success } }).then(function() {console.log("exiting!"); this.exit()});
+  casper.wait(shortDelay, function() {
+    success ? console.log('Order successfully submitted') : console.log('Order was unsuccessful');
+    casper.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: success } }).then(function() {console.log("exiting!"); this.exit()});
+  });
 }
 
 // Add one person every 5 seconds
