@@ -25,6 +25,7 @@ var alfredGetOrdersUrl = 'http://' + alfredBaseUrl + '/get_orders';
 var alfredPostCompletionUrl = 'http://lil-delhi-alfred.herokuapp.com/order_completed';
 var timeoutFunction = function() {notifyAlfred(false);};
 var timeout = 20000; // 20 seconds for each step
+var shortDelay = 500; // for waiting between actions
 var orders;
 
 // TODO: Figure out a way to send headers in .start
@@ -117,7 +118,7 @@ function addPeople(people, i) {
   casper.sendKeys('input#LastName', last);
   casper.clickLabel('Verify', 'a');
 
-  casper.wait(8000, function() {
+  casper.waitForSelector('input#AllocationAmt'+(i+2), function() {
     console.log(first + ' ' + last + ' added!');
     if (++i < people.length)
       addPeople(people, i);
@@ -126,22 +127,37 @@ function addPeople(people, i) {
   });
 }
 
+// Wait for a selector, and then some
+function waitForWithDelay(selector, delay, callback) {
+  casper.waitForSelector(selector, function() {
+    this.wait(delay, callback);
+  }, timeoutFunction, timeout);
+}
+
+// Wait until a selector disappears, and then some
+function waitWhileWithDelay(selector, delay, callback) {
+  casper.waitWhileSelector(selector, function() {
+    this.wait(delay, callback)
+  }, timeoutFunction, timeout);
+}
+
 // Add an item every 4 seconds
 function clickOrders(items, i) {
   var item = Object.keys(items[i])[0];
   casper.clickLabel(item, 'a');
 
-  casper.waitForSelector('form#orderAttributes', function() {
+  waitForWithDelay('form#orderAttributes', shortDelay,  function() {
     console.log("Step4: " + item + " loaded");
 
     if (items[i][item].spice !== undefined)
       this.clickLabel(items[i][item].spice, 'label');
-    this.wait(3000, function() {
+
+    waitForWithDelay('a#a1', shortDelay, function() {
       this.clickLabel('Add Item to Your Order', 'a');
     });
 
     // wait for modal to close
-    this.wait(5000, function() {
+    waitWhileWithDelay('form#orderAttributes', shortDelay, function() {
       console.log(item + " added");
       if (++i < items.length)
         clickOrders(items, i);
@@ -149,5 +165,5 @@ function clickOrders(items, i) {
         this.emit('items.added');
     });
 
-  }, timeoutFunction, timeout);
+  });
 }
