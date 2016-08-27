@@ -105,8 +105,9 @@ casper.run();
 
 function notifyAlfred(success) {
   casper.wait(shortDelay, function() {
-    success ? console.log('Order successfully submitted') : console.log('Order was unsuccessful');
-    casper.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: success } }).then(function() {console.log("exiting!"); this.exit()});
+    console.log('Order was ' + (success ? 'successful' : 'unsuccessful'));
+    casper.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: success } })
+          .then(function() {console.log("exiting!"); this.exit()});
   });
 }
 
