@@ -127,7 +127,7 @@ function addPeople(people, i) {
       addPeople(people, i);
     else
       casper.emit('people.added');
-  });
+  }, timeoutFunction, timeout);
 }
 
 // Wait for a selector, and then some
