@@ -104,7 +104,7 @@ casper.waitForSelector('div.ThanksForOrder', function() {
 casper.run();
 
 function notifyAlfred(success) {
-  casper.wait(shortDelay, function() {
+  casper.then(function() {
     console.log('Order was ' + (success ? 'successful' : 'unsuccessful'));
     casper.open(alfredPostCompletionUrl, { method: 'POST', data: { token: private.slackSecret , success: success } })
           .then(function() {console.log("exiting!"); this.exit()});
