@@ -51,10 +51,11 @@ casper.waitForSelector('form#widgetLoginForm', function() {
 }, timeoutFunction, timeout);
 
 // 2. Default to ASAP for now
-//casper.waitForSelector('form#pageForm', function() {
-//  console.log("Step 1: Time selection loaded");
-//  this.fill('form#pageForm', {'time': '6:00 PM'}, true);
-//}, timeoutFunction, timeout);
+casper.waitForSelector('form#pageForm', function() {
+  console.log("Step 1: Time selection loaded");
+  this.clickLabel('View Restaurants', 'a');
+  //this.fill('form#pageForm', {'time': '6:00 PM'}, true);
+}, timeoutFunction, timeout);
 
 // 3. Select Little Delhi
 casper.waitForSelector('table#resultstable', function() {
