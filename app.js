@@ -50,11 +50,11 @@ casper.waitForSelector('form#widgetLoginForm', function() {
   }, true);
 }, timeoutFunction, timeout);
 
-// 2. Select 5:15 delivery
-casper.waitForSelector('form#pageForm', function() {
-  console.log("Step 1: Time selection loaded");
-  this.fill('form#pageForm', {'time': '5:15 PM'}, true);
-}, timeoutFunction, timeout);
+// 2. Default to ASAP for now
+//casper.waitForSelector('form#pageForm', function() {
+//  console.log("Step 1: Time selection loaded");
+//  this.fill('form#pageForm', {'time': '6:00 PM'}, true);
+//}, timeoutFunction, timeout);
 
 // 3. Select Little Delhi
 casper.waitForSelector('table#resultstable', function() {
