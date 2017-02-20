@@ -24,7 +24,7 @@ var alfredBaseUrl = DEBUG ? 'localhost:3000' : 'lil-delhi-alfred.herokuapp.com';
 var alfredGetOrdersUrl = 'http://' + alfredBaseUrl + '/get_orders';
 var alfredPostCompletionUrl = 'http://' + alfredBaseUrl + '/order_completed';
 var timeoutFunction = function() {notifyAlfred(false);};
-var timeout = 20000; // 20 seconds for each step
+var timeout = 40000; // 40 second timeout for each step
 var shortDelay = 500; // for waiting between actions
 var orders;
 
